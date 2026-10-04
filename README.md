@@ -23,3 +23,21 @@ based and also are able to store state in a plain text manner.
     - everything else is based on the structure of the git repo i.e like
       vscode/ide/nerdtree side bar showing folders and markdown files, clicking
       one changes the main view to show the content of that markdown file.
+
+## Development
+
+Start the local server with:
+
+```sh
+make dev
+```
+
+Install the pinned test dependencies and Playwright's Chromium build once, then
+run the browser integration tests:
+
+```sh
+make test-setup
+make test
+```
+
+Use `make test-headed` to watch the tests run in a browser window.

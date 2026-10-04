@@ -9,9 +9,9 @@
 
 ## Offline storage
 
-- [ ] Add IndexedDB stores for settings, repository snapshots, and inbox items.
-- [ ] Precache the app shell in the service worker with a versioned cache.
-- [ ] Add internal routes for tasks, notes, the file tree, inbox, and refresh.
+- [x] Add IndexedDB stores for settings, repository snapshots, and inbox items.
+- [x] Precache the app shell in the service worker with a versioned cache.
+- [x] Add internal routes for tasks, notes, the file tree, inbox, and refresh.
 
 ## GitHub sync
 
@@ -32,8 +32,10 @@
 
 ## Ship and verify
 
+- [x] Add browser integration tests for routes, IndexedDB, app-shell caching, and offline reloads.
 - [ ] Add a GitHub Pages deployment workflow.
-- [ ] Test on localhost, then from the installed mobile PWA.
+- [x] Test in Chromium on localhost.
+- [ ] Test from the installed mobile PWA.
 - [ ] Sync once, enable airplane mode, restart the app, and verify all tasks and notes remain available.
 - [ ] Verify inbox items survive restart and can be copied and cleared offline.
 - [ ] Verify no token is present in source, URLs, logs, or deployed assets.

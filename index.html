@@ -13,10 +13,24 @@
     <link rel="apple-touch-icon" href="./icons/icon-192.png">
     <script src="./vendor/htmx.min.js" defer></script>
     <script src="./vendor/markdown-it.min.js" defer></script>
+    <script src="./storage.js" defer></script>
     <script src="./app.js" defer></script>
     <script src="./vendor/alpine.min.js" defer></script>
   </head>
   <body>
-    <div>hello!</div>
+    <header class="app-header">
+      <a class="brand" href="#/tasks" aria-label="Worktree tasks">
+        <img src="./icons/icon-192.png" alt="" width="40" height="40">
+        <span>Worktree</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#/tasks" data-route="tasks">Tasks</a>
+        <a href="#/files" data-route="files">Files</a>
+        <a href="#/inbox" data-route="inbox">Inbox</a>
+        <a href="#/refresh" data-route="refresh">Refresh</a>
+      </nav>
+    </header>
+    <main id="app" class="app-content" aria-live="polite"></main>
+    <noscript>Worktree requires JavaScript.</noscript>
   </body>
 </html>
