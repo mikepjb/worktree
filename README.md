@@ -9,13 +9,8 @@ based and also are able to store state in a plain text manner.
 
 ## MVP version
 
-1. What should this be?
-    - expo/react-native app?
-    - web app/pwa?
-    - something else?
-
-2. Provide a way to auth (dedicated SSH key for github access, entered in
-   worktree app UI)
+1. PWA, public client hosted on github pages that accepts github read-only API
+   key for private repo access which is stored on the client only.
 
 3. Provide a way to view tasks, ordered by +next tag, due date and urgency
 
@@ -24,10 +19,3 @@ based and also are able to store state in a plain text manner.
     - everything else is based on the structure of the git repo i.e like
       vscode/ide/nerdtree side bar showing folders and markdown files, clicking
       one changes the main view to show the content of that markdown file.
-
-### Notes
-
-- Taskwarrior tasks available as tasks.json in base of repo
-- Markdown has no set structure and changes over time potentially
-- There are other files in my notes repo (where all of the markdown + tasks.json
-  is stored). These should be ignored at least for this MVP version.
