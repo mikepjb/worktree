@@ -77,6 +77,13 @@ nav a[aria-current="page"] { background: #d8e8d2; }
 .note > * + * { margin-top: 1rem; }
 .note ul, .note ol { padding-left: 1.5rem; }
 .note pre { overflow-x: auto; padding: 1rem; border-radius: 0.5rem; background: #e7eee3; }
+.sync-form { display: grid; gap: 1rem; max-width: 36rem; margin-top: 1.5rem; }
+.sync-form label { display: grid; gap: 0.375rem; font-weight: 600; }
+.sync-form input { width: 100%; padding: 0.625rem; border: 1px solid #aabbaa; border-radius: 0.375rem; background: white; color: #173f2d; }
+.sync-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.sync-actions button { padding: 0.625rem 0.875rem; border: 0; border-radius: 0.375rem; background: #356b42; color: white; cursor: pointer; }
+.sync-actions button:disabled { opacity: 0.6; cursor: wait; }
+.sync-status, .sync-meta { color: #53685a; }
 
 @media (max-width: 38rem) {
   .app-header { align-items: flex-start; flex-direction: column; }

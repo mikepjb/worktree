@@ -129,12 +129,98 @@ async function renderInbox() {
   return content;
 }
 
-function renderRefresh() {
-  const content = page("Refresh", "Repository synchronization will live here.");
-  content.append(
-    emptyState("Configure GitHub sync before refreshing the cached snapshot."),
-  );
+async function renderRefresh() {
+  const content = page("GitHub sync", "Sync tasks.json and Markdown files from a GitHub repository. Credentials stay in this browser.");
+  const settings = await storage.getSettings();
+  const form = element("form", { className: "sync-form" });
+  const fields = [
+    ["owner", "Owner", "text"],
+    ["repository", "Repository", "text"],
+    ["branch", "Branch", "text"],
+    ["token", "Read-only token (optional for public repos)", "password"],
+  ];
+  for (const [name, labelText, type] of fields) {
+    const label = element("label", { text: labelText });
+    const input = element("input");
+    input.name = name;
+    input.type = type;
+    input.autocomplete = type === "password" ? "new-password" : "off";
+    input.required = name !== "token";
+    if (name !== "token") input.value = settings?.[name] ?? "";
+    if (name === "token") input.placeholder = settings?.token ? "Saved; leave blank to keep" : "Fine-grained token with repository contents: read";
+    label.append(input);
+    form.append(label);
+  }
+  const actions = element("div", { className: "sync-actions" });
+  const save = element("button", { text: "Validate and save" });
+  save.type = "submit";
+  const refresh = element("button", { text: "Refresh now" });
+  refresh.type = "button";
+  refresh.dataset.refresh = "true";
+  actions.append(save, refresh);
+  form.append(actions);
+  const status = element("p", { className: "sync-status", text: "" });
+  status.setAttribute("role", "status");
+  form.append(status);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await submitSettings(form, status);
+  });
+  refresh.addEventListener("click", () => runRefresh(form, status));
+  content.append(form);
+  const snapshot = settings ? await storage.getSnapshot(window.worktreeGitHub.repositoryId(settings)) : undefined;
+  content.append(element("p", { className: "sync-meta", text: snapshot ? `Last successful refresh: ${new Date(snapshot.storedAt).toLocaleString()}${navigator.onLine ? "" : " (offline)"}` : (navigator.onLine ? "No successful refresh yet." : "Offline — cached snapshots remain available.") }));
   return content;
+}
+
+async function collectSettings(form) {
+  const data = new FormData(form);
+  const current = await storage.getSettings();
+  return {
+    owner: String(data.get("owner")).trim(),
+    repository: String(data.get("repository")).trim(),
+    branch: String(data.get("branch")).trim(),
+    token: String(data.get("token")).trim() || current?.token || "",
+  };
+}
+
+async function submitSettings(form, status) {
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+  status.textContent = "Checking repository access…";
+  try {
+    const settings = await collectSettings(form);
+    await window.worktreeGitHub.validate(settings);
+    await storage.saveSettings(settings);
+    form.elements.token.value = "";
+    status.textContent = "Repository access verified and settings saved on this device.";
+  } catch (error) {
+    status.textContent = error.message || "Unable to validate GitHub settings.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function runRefresh(form, status) {
+  const button = form.querySelector("[data-refresh]");
+  button.disabled = true;
+  status.textContent = "Fetching repository…";
+  try {
+    const settings = await collectSettings(form);
+    await window.worktreeGitHub.validate(settings);
+    const id = window.worktreeGitHub.repositoryId(settings);
+    const previous = await storage.getSnapshot(id);
+    const snapshot = await window.worktreeGitHub.sync(settings, previous);
+    await storage.saveSettings(settings);
+    await storage.replaceSnapshot(id, snapshot);
+    form.elements.token.value = "";
+    status.textContent = `Refresh complete: ${snapshot.tasks.length} tasks and ${snapshot.files.length} notes.`;
+    renderRoute();
+  } catch (error) {
+    status.textContent = error.message || "Refresh failed. The previous snapshot was kept.";
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function renderNotFound() {
@@ -212,7 +298,7 @@ async function renderRoute() {
         content = await renderInbox();
         break;
       case "refresh":
-        content = renderRefresh();
+        content = await renderRefresh();
         break;
       default:
         content = renderNotFound();

@@ -27,7 +27,7 @@ test("internal routes render their offline-backed views", async ({ page }) => {
   await expect(page.getByText("Your local inbox is empty")).toBeVisible();
 
   await page.getByRole("link", { name: "Refresh" }).click();
-  await expect(page.getByRole("heading", { name: "Refresh" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "GitHub sync" })).toBeVisible();
 });
 
 test("settings are saved and retrieved from IndexedDB", async ({ page }) => {
@@ -140,12 +140,12 @@ test("the versioned app shell contains every offline dependency", async ({
 
   const cacheState = await page.evaluate(async () => {
     const names = await caches.keys();
-    const cache = await caches.open("worktree-shell-v1");
+    const cache = await caches.open("worktree-shell-v2");
     const paths = (await cache.keys()).map((request) => new URL(request.url).pathname);
     return { names, paths };
   });
 
-  expect(cacheState.names).toContain("worktree-shell-v1");
+  expect(cacheState.names).toContain("worktree-shell-v2");
   expect(cacheState.paths).toEqual(
     expect.arrayContaining([
       "/",
@@ -153,6 +153,7 @@ test("the versioned app shell contains every offline dependency", async ({
       "/styles.css",
       "/app.js",
       "/storage.js",
+      "/github-sync.js",
       "/manifest.webmanifest",
       "/icons/icon-192.png",
       "/icons/icon-512.png",

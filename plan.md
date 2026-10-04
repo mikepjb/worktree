@@ -15,12 +15,12 @@
 
 ## GitHub sync
 
-- [ ] Add settings for repository owner, name, branch, and read-only token.
-- [ ] Validate settings with a test GitHub API request.
-- [ ] Fetch the repository tree and retain only `tasks.json` and Markdown files.
-- [ ] Download changed files by blob SHA and reuse unchanged cached files.
-- [ ] Replace the local snapshot only after a complete successful refresh.
-- [ ] Show offline state and the last successful refresh time.
+- [x] Add settings for repository owner, name, branch, and read-only token.
+- [x] Validate settings with a test GitHub API request.
+- [x] Fetch the repository tree and retain only `tasks.json` and Markdown files.
+- [x] Download changed files by blob SHA and reuse unchanged cached files.
+- [x] Replace the local snapshot only after a complete successful refresh.
+- [x] Show offline state and the last successful refresh time.
 
 ## Interface
 
