@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Organic asymmetrical tree with roots</title>
+  <rect width="512" height="512" fill="#f7ead7"/>
+  <g fill="none" stroke="#51392d" stroke-width="27" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 390C247 340 267 291 257 237"/>
+    <path d="M257 312C218 299 181 271 163 233M252 274C220 251 202 218 201 183M260 283C298 264 324 231 331 190M257 239C244 209 245 174 260 139M276 328C315 315 342 290 354 257"/>
+    <path d="M256 380C228 391 207 401 184 416M256 380C278 394 303 402 331 415M256 378C254 392 253 401 253 408"/>
+    <path d="M126 430Q249 374 386 426"/>
+  </g>
+  <g fill="#d86b47" stroke="#51392d" stroke-width="14">
+    <circle cx="163" cy="233" r="29"/>
+    <circle cx="201" cy="183" r="29"/>
+    <circle cx="260" cy="139" r="29"/>
+    <circle cx="331" cy="190" r="29"/>
+    <circle cx="354" cy="257" r="29"/>
+  </g>
+</svg>

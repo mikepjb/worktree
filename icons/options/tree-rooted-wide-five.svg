@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Open five-branch tree with narrow roots</title>
+  <rect width="512" height="512" fill="#edf3e7"/>
+  <g fill="none" stroke="#294936" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 397C251 347 260 304 256 267"/>
+    <path d="M256 338C211 320 169 285 139 237M252 307C215 274 194 232 193 184M256 268C249 225 254 180 263 137M260 307C300 274 323 232 327 183M261 338C308 318 350 282 374 235"/>
+    <path d="M256 389C238 398 221 406 205 417M256 389C274 399 291 407 308 417M256 386V410"/>
+    <path d="M180 426Q256 389 332 426"/>
+  </g>
+  <g fill="#78a968" stroke="#294936" stroke-width="12">
+    <circle cx="139" cy="237" r="27"/>
+    <circle cx="193" cy="184" r="27"/>
+    <circle cx="263" cy="137" r="27"/>
+    <circle cx="327" cy="183" r="27"/>
+    <circle cx="374" cy="235" r="27"/>
+  </g>
+</svg>

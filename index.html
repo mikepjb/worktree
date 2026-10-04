@@ -1,16 +1,19 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#173f2d">
     <title>Worktree</title>
-    <meta name="description" content="Task and Notes viewer">
-    <meta property="og:title" content="Worktree - Task and Notes viewer">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
-      <text y='.9em' font-size='90'>⚡</text></svg>">
-    <script src="app.js"></script>
-    <script src="sw.js"></script>
+    <meta name="description" content="Task and notes viewer">
+    <meta property="og:title" content="Worktree - Task and notes viewer">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <script src="./vendor/htmx.min.js" defer></script>
+    <script src="./vendor/markdown-it.min.js" defer></script>
+    <script src="./app.js" defer></script>
   </head>
   <body>
     <div>hello!</div>

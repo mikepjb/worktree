@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Geometric branching tree network</title>
+  <rect width="512" height="512" fill="#163c34"/>
+  <g fill="none" stroke="#d5edcf" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 402V278M256 318l-100-76V154M256 318l100-76V154M256 278V128"/>
+  </g>
+  <g fill="#f2b84b" stroke="#d5edcf" stroke-width="12">
+    <circle cx="156" cy="154" r="28"/>
+    <circle cx="256" cy="128" r="28"/>
+    <circle cx="356" cy="154" r="28"/>
+    <circle cx="256" cy="278" r="24"/>
+  </g>
+  <path d="M190 404h132" fill="none" stroke="#d5edcf" stroke-width="24" stroke-linecap="round"/>
+</svg>

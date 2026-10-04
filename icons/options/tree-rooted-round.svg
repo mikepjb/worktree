@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Rounded spreading tree with roots</title>
+  <rect width="512" height="512" fill="#173f2d"/>
+  <g fill="none" stroke="#dcebd5" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 391C251 344 261 301 256 261"/>
+    <path d="M256 322C220 308 186 278 169 242M252 293C220 270 207 238 207 203M258 281C285 257 296 225 293 191M260 321C300 307 332 280 346 244M256 260C249 226 255 192 263 164"/>
+    <path d="M256 382C231 394 208 404 185 416M256 382C280 395 304 404 329 416M256 379V407"/>
+    <path d="M128 428Q256 377 384 428"/>
+  </g>
+  <g fill="#e3a94d" stroke="#dcebd5" stroke-width="13">
+    <circle cx="169" cy="242" r="28"/>
+    <circle cx="207" cy="203" r="28"/>
+    <circle cx="263" cy="164" r="28"/>
+    <circle cx="293" cy="191" r="28"/>
+    <circle cx="346" cy="244" r="28"/>
+  </g>
+</svg>

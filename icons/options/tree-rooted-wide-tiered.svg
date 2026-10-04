@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Tiered wide tree with narrow roots</title>
+  <rect width="512" height="512" fill="#edf3e7"/>
+  <g fill="none" stroke="#294936" stroke-width="23" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 397C249 347 262 304 256 269"/>
+    <path d="M256 340C211 330 164 308 132 278M252 309C211 291 184 258 170 220M253 277C224 249 213 209 214 168M257 270C249 226 257 176 278 137M260 291C299 264 321 229 330 190M261 319C311 302 355 275 382 248"/>
+    <path d="M256 389C238 398 222 406 207 416M256 389C274 399 290 407 306 416M256 386V410"/>
+    <path d="M183 425Q256 390 329 425"/>
+  </g>
+  <g fill="#78a968" stroke="#294936" stroke-width="12">
+    <circle cx="132" cy="278" r="25"/>
+    <circle cx="170" cy="220" r="25"/>
+    <circle cx="214" cy="168" r="25"/>
+    <circle cx="278" cy="137" r="25"/>
+    <circle cx="330" cy="190" r="25"/>
+    <circle cx="382" cy="248" r="25"/>
+  </g>
+</svg>
