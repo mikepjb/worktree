@@ -33,12 +33,17 @@ test("internal routes render their offline-backed views", async ({ page }) => {
 test("task badges, filtering, ordering, search, and appearance settings work", async ({ page }) => {
   await openApp(page);
   await page.evaluate(async () => {
+    const futureWait = new Date(Date.now() + 86400000).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
     await window.worktreeStorage.replaceSnapshot("example/notes@main", {
       tasks: [
         { description: "Z project task", status: "pending", project: "work", due: "20261201T000000Z" },
         { description: "B next task", status: "pending", tags: ["next"] },
         { description: "A due next", status: "pending", due: "20261101T000000Z" },
-        { description: "Recurring thing", status: "recurring" },
+        { description: "Recurring thing", status: "pending", recur: "weekly" },
+        { description: "Someday next", status: "pending", project: "someday", tags: ["next"], due: "20261005T000000Z" },
+        { description: "Future recurring", status: "pending", recur: "weekly", wait: futureWait },
+        { description: "Future regular", status: "pending", wait: futureWait },
+        { description: "Recurring template", status: "recurring", recur: "weekly", wait: "20260801T000000Z" },
         { description: "Done item", status: "completed" },
       ],
       files: [{ path: "guides/search.md", content: "Look up searchable phrase here." }],
@@ -46,13 +51,22 @@ test("task badges, filtering, ordering, search, and appearance settings work", a
     await window.worktreeStorage.addInboxItem("Inbox counter");
   });
   await page.reload();
-  await expect(page.locator('[data-count="tasks"]')).toHaveText("4");
+  await expect(page.locator('[data-count="tasks"]')).toHaveText("5");
   await expect(page.locator('[data-count="inbox"]')).toHaveText("1");
   await expect(page.locator(".task-list")).toHaveCSS("padding-left", "0px");
   const tasks = page.locator(".task-description");
-  await expect(tasks).toHaveText(["B next task", "A due next", "Z project task", "Recurring thing"]);
+  await expect(tasks).toHaveText(["B next task", "A due next", "Z project task", "Recurring thing", "Someday next"]);
+  await page.locator(".project-filter summary").click();
+  await page.getByLabel("work", { exact: true }).uncheck();
+  await expect(page.getByText("Z project task")).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText("Z project task")).toHaveCount(0);
   await page.getByRole("button", { name: "Completed" }).click();
   await expect(tasks).toHaveText(["Done item"]);
+  await page.getByRole("button", { name: "All" }).click();
+  await expect(page.getByText("Future recurring")).toBeVisible();
+  await expect(page.getByText("Future regular")).toBeVisible();
+  await expect(page.getByText("Recurring template")).toHaveCount(0);
   await page.locator("#desktop-search input").fill("searchable phrase");
   await expect(page.getByRole("link", { name: "guides/search.md" })).toBeVisible();
   await page.goto("/#/refresh");
@@ -185,12 +199,12 @@ test("the versioned app shell contains every offline dependency", async ({
 
   const cacheState = await page.evaluate(async () => {
     const names = await caches.keys();
-    const cache = await caches.open("worktree-shell-v5");
+    const cache = await caches.open("worktree-shell-v6");
     const paths = (await cache.keys()).map((request) => new URL(request.url).pathname);
     return { names, paths };
   });
 
-  expect(cacheState.names).toContain("worktree-shell-v5");
+  expect(cacheState.names).toContain("worktree-shell-v6");
   expect(cacheState.paths).toEqual(
     expect.arrayContaining([
       "/",

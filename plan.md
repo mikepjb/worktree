@@ -29,6 +29,8 @@
 - [x] Add search across task descriptions, note paths, and note content.
 - [x] Add persisted System/Light/Dark appearance and independent palettes.
 - [x] Render active, completed, and all task filters; order by `+next`, due date, project, and description.
+- [x] Respect future `wait` dates in the active filter and task count; show generated recurring instances when available.
+- [x] Persist a per-repository project filter and keep `someday` tasks last.
 - [x] Add the local inbox: create, copy all, remove, and clear.
 - [x] Add focused browser tests for search, sorting, menu behavior, and appearance options.
 

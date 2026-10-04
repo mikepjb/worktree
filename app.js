@@ -6,6 +6,8 @@ const tree = document.querySelector("#note-tree");
 const expandedFolders = new Set();
 let taskFilter = "active";
 let liveSearchStarted = false;
+let projectFilterOpen = false;
+const projectFilterKey = "worktree-project-filter";
 const appearanceKey = "worktree-appearance";
 
 function element(tag, options = {}) {
@@ -29,6 +31,50 @@ function page(title, description) {
 function emptyState(message) { return element("p", { className: "empty-state", text: message }); }
 function noteUrl(path) { return `#/notes/${path.split("/").map(encodeURIComponent).join("/")}`; }
 function latestSnapshot() { return storage.getLatestSnapshot(); }
+function taskIsWaiting(task, now = Date.now()) {
+  if (!task.wait) return false;
+  const match = String(task.wait).match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?$/);
+  const timestamp = match
+    ? Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6]))
+    : Date.parse(task.wait);
+  return !Number.isFinite(timestamp) || timestamp > now;
+}
+function isActiveTask(task, now = Date.now()) {
+  return task.status === "pending" && !taskIsWaiting(task, now);
+}
+function readProjectSelection(snapshot, projects) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(projectFilterKey) || "null");
+    if (!saved || saved.repositoryId !== snapshot?.id || saved.all) return new Set(projects);
+    return new Set(saved.selected ?? []);
+  } catch {
+    return new Set(projects);
+  }
+}
+function renderProjectFilter(snapshot, projects, selection) {
+  const details = element("details", { className: "project-filter" });
+  details.open = projectFilterOpen;
+  details.addEventListener("toggle", () => { projectFilterOpen = details.open; });
+  const named = (value) => value || "No project";
+  const summary = element("summary", { text: `Projects · ${selection.size} of ${projects.length}` });
+  details.append(summary);
+  const options = element("div", { className: "project-options" });
+  for (const project of projects) {
+    const label = element("label", { className: "project-option" });
+    const checkbox = element("input"); checkbox.type = "checkbox"; checkbox.checked = selection.has(project);
+    checkbox.addEventListener("change", () => {
+      const next = new Set(selection);
+      if (checkbox.checked) next.add(project); else next.delete(project);
+      const all = next.size === projects.length;
+      localStorage.setItem(projectFilterKey, JSON.stringify({ repositoryId: snapshot?.id ?? null, all, selected: all ? [] : [...next] }));
+      projectFilterOpen = true;
+      renderRoute();
+    });
+    label.append(checkbox, element("span", { text: named(project) })); options.append(label);
+  }
+  details.append(options);
+  return details;
+}
 
 function parseRoute() {
   const raw = location.hash.replace(/^#\/?/, "");
@@ -93,9 +139,17 @@ function buildTree(files) {
 async function renderTasks() {
   const snapshot = await latestSnapshot();
   const tasks = snapshot?.tasks ?? [];
-  const active = tasks.filter((task) => ["pending", "recurring"].includes(task.status));
-  const completed = tasks.filter((task) => task.status === "completed");
-  const sorted = (taskFilter === "active" ? active : taskFilter === "completed" ? completed : [...active, ...completed]).sort((a, b) => {
+  const eligible = tasks.filter((task) => ["pending", "completed"].includes(task.status));
+  const projects = [...new Set(eligible.map((task) => task.project || ""))].sort((a, b) => a.localeCompare(b));
+  const selection = readProjectSelection(snapshot, projects);
+  const filtered = eligible.filter((task) => selection.has(task.project || ""));
+  const active = filtered.filter(isActiveTask);
+  const completed = filtered.filter((task) => task.status === "completed");
+  const all = filtered;
+  const sorted = (taskFilter === "active" ? active : taskFilter === "completed" ? completed : all).sort((a, b) => {
+    const somedayA = String(a.project ?? "").toLocaleLowerCase() === "someday";
+    const somedayB = String(b.project ?? "").toLocaleLowerCase() === "someday";
+    if (somedayA !== somedayB) return somedayA ? 1 : -1;
     const next = (task) => task.tags?.includes("next") ? 1 : 0;
     if (next(a) !== next(b)) return next(b) - next(a);
     const dueA = a.due || "99999999999999", dueB = b.due || "99999999999999";
@@ -112,7 +166,7 @@ async function renderTasks() {
     button.addEventListener("click", () => { taskFilter = key; renderRoute(); });
     filters.append(button);
   }
-  content.append(filters);
+  content.append(filters, renderProjectFilter(snapshot, projects, selection));
   if (!sorted.length) { content.append(emptyState(snapshot ? "No tasks in this filter." : "No cached tasks yet. Sync a repository first.")); return content; }
   const list = element("ul", { className: "task-list" });
   for (const task of sorted) {
@@ -121,7 +175,7 @@ async function renderTasks() {
     const meta = element("span", { className: "task-meta" });
     if (task.tags?.includes("next")) meta.append(element("span", { className: "task-tag", text: "+next" }));
     if (task.start) meta.append(element("span", { className: "task-tag", text: "In progress" }));
-    if (task.status === "recurring") meta.append(element("span", { className: "task-tag", text: "Recurring" }));
+    if (task.recur) meta.append(element("span", { className: "task-tag", text: "Recurring" }));
     if (task.project) meta.append(element("span", { text: task.project }));
     if (task.due) meta.append(element("time", { text: task.due.slice(0, 8) }));
     row.append(description, meta); list.append(row);
@@ -222,7 +276,7 @@ async function renderSearch(query) {
   const content = page("Search", query ? `Results for “${query}”` : "Search tasks and notes.");
   if (!query.trim()) { content.append(emptyState("Enter a search term to find tasks and notes.")); return content; }
   const snapshot = await latestSnapshot(), needle = query.toLocaleLowerCase(); const results = [];
-  for (const task of snapshot?.tasks ?? []) if (String(task.description ?? "").toLocaleLowerCase().includes(needle)) results.push({ title: task.description ?? "Task", type: "Task", href: "#/tasks", text: task.description ?? "" });
+  for (const task of snapshot?.tasks ?? []) if (["pending", "completed"].includes(task.status) && String(task.description ?? "").toLocaleLowerCase().includes(needle)) results.push({ title: task.description ?? "Task", type: "Task", href: "#/tasks", text: task.description ?? "" });
   for (const file of snapshot?.files ?? []) {
     const pathMatch = file.path.toLocaleLowerCase().includes(needle), lines = String(file.content ?? "").split(/\r?\n/); const matching = lines.find((line) => line.toLocaleLowerCase().includes(needle));
     if (pathMatch || matching) results.push({ title: file.path, type: "Note", href: noteUrl(file.path), text: matching ?? file.path });
@@ -237,7 +291,7 @@ async function renderRoute() {
   try {
     const snapshot = await latestSnapshot(); buildTree(snapshot?.files ?? []);
     const inbox = await storage.listInboxItems(); document.querySelector('[data-count="inbox"]').textContent = String(inbox.length);
-    const tasks = (snapshot?.tasks ?? []).filter((task) => ["pending", "recurring"].includes(task.status)); document.querySelector('[data-count="tasks"]').textContent = String(tasks.length);
+    const tasks = (snapshot?.tasks ?? []).filter(isActiveTask); document.querySelector('[data-count="tasks"]').textContent = String(tasks.length);
     let content;
     switch (route.name) {
       case "tasks": content = await renderTasks(); break;
