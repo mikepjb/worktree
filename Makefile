@@ -1,6 +1,7 @@
-HTMX_VERSION := 2.0.8
-MARKDOWN_IT_VERSION := 14.1.0
-VENDOR_DIR := vendor
+HTMX_VERSION := 4.0.0
+MARKDOWN_IT_VERSION := 15.0.2
+ALPINE_VERSION := 3.17.4
+INTER_VERSION := 4.1
 
 .PHONY: dev vendor
 
@@ -9,12 +10,8 @@ dev:
 
 # Versions are pinned above; update them and rerun this target to upgrade.
 vendor:
-	@mkdir -p "$(VENDOR_DIR)"
-	curl --fail --silent --show-error --location \
-		"https://cdn.jsdelivr.net/npm/htmx.org@$(HTMX_VERSION)/dist/htmx.min.js" \
-		--output "$(VENDOR_DIR)/htmx.min.js.tmp"
-	mv "$(VENDOR_DIR)/htmx.min.js.tmp" "$(VENDOR_DIR)/htmx.min.js"
-	curl --fail --silent --show-error --location \
-		"https://cdn.jsdelivr.net/npm/markdown-it@$(MARKDOWN_IT_VERSION)/dist/markdown-it.min.js" \
-		--output "$(VENDOR_DIR)/markdown-it.min.js.tmp"
-	mv "$(VENDOR_DIR)/markdown-it.min.js.tmp" "$(VENDOR_DIR)/markdown-it.min.js"
+	@HTMX_VERSION="$(HTMX_VERSION)" \
+		MARKDOWN_IT_VERSION="$(MARKDOWN_IT_VERSION)" \
+		ALPINE_VERSION="$(ALPINE_VERSION)" \
+		INTER_VERSION="$(INTER_VERSION)" \
+		./scripts/vendor.sh
