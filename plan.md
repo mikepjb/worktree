@@ -35,7 +35,7 @@
 ## Ship and verify
 
 - [x] Add browser integration tests for routes, IndexedDB, app-shell caching, and offline reloads.
-- [ ] Add a GitHub Pages deployment workflow.
+- [x] Add a GitHub Pages deployment workflow that tests before deploy.
 - [x] Test in Chromium on localhost.
 - [ ] Test from the installed mobile PWA.
 - [ ] Sync once, enable airplane mode, restart the app, and verify all tasks and notes remain available.

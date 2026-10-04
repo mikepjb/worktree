@@ -41,3 +41,19 @@ make test
 ```
 
 Use `make test-headed` to watch the tests run in a browser window.
+
+## Deploy to GitHub Pages
+
+The `Deploy to GitHub Pages` workflow runs the browser tests and publishes the
+static app when changes are pushed to `main` (or when manually dispatched).
+Enable Pages once in the repository settings:
+
+1. Open **Settings → Pages**.
+2. Set **Build and deployment → Source** to **GitHub Actions**.
+3. Push to `main`, then open the workflow run to find the deployed URL.
+
+After deployment, open **Sync / Settings** in Worktree and enter the repository
+owner, name, branch, and (for a private repository) a fine-grained GitHub token
+with **Contents: read-only** access to that repository. Worktree validates the
+access and stores the token in the browser's IndexedDB; do not put it in the
+repository, workflow, or URL. The public Pages site contains no token.
