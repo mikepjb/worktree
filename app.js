@@ -5,6 +5,7 @@ const menu = document.querySelector("#menu");
 const tree = document.querySelector("#note-tree");
 const expandedFolders = new Set();
 let taskFilter = "active";
+let liveSearchStarted = false;
 const appearanceKey = "worktree-appearance";
 
 function element(tag, options = {}) {
@@ -189,8 +190,8 @@ async function renderRefresh() {
   const section = element("section", { className: "settings-section" }); section.append(element("h2", { text: "Appearance" }));
   const appearance = JSON.parse(localStorage.getItem(appearanceKey) || "{}");
   const mode = settingsSelect("Appearance", "mode", [["system", "System"], ["light", "Light"], ["dark", "Dark"]], appearance.mode ?? "system");
-  const light = settingsSelect("Light palette", "lightPalette", [["white", "White"], ["sepia", "Sepia"]], appearance.lightPalette ?? "white");
-  const dark = settingsSelect("Dark palette", "darkPalette", [["charcoal", "Charcoal"], ["black", "Black"], ["sepia", "Sepia"]], appearance.darkPalette ?? "charcoal");
+  const light = settingsSelect("Light palette", "lightPalette", [["white", "White"], ["sepia", "Sepia"], ["mist", "Mist"], ["sage", "Sage"], ["rose", "Rose"]], appearance.lightPalette ?? "white");
+  const dark = settingsSelect("Dark palette", "darkPalette", [["charcoal", "Charcoal"], ["black", "Black"], ["sepia", "Sepia"], ["forest", "Forest"], ["midnight", "Midnight"], ["plum", "Plum"]], appearance.darkPalette ?? "charcoal");
   for (const control of [mode, light, dark]) { control.select.addEventListener("change", () => { appearance[control.select.name] = control.select.value; localStorage.setItem(appearanceKey, JSON.stringify(appearance)); applyTheme(); }); section.append(control.label); }
   content.append(section);
   const dataActions = element("section", { className: "settings-section" }); dataActions.append(element("h2", { text: "Local data" }));
@@ -253,19 +254,45 @@ async function renderRoute() {
 }
 function closeMenu() { menu.classList.remove("is-open"); document.querySelector("#menu-toggle").setAttribute("aria-expanded", "false"); document.querySelector("#menu-backdrop").hidden = true; }
 function openMenu() { menu.classList.add("is-open"); document.querySelector("#menu-toggle").setAttribute("aria-expanded", "true"); document.querySelector("#menu-backdrop").hidden = false; }
-function submitSearch(form) { const query = String(new FormData(form).get("q") ?? "").trim(); location.hash = `#/search?q=${encodeURIComponent(query)}`; form.reset(); document.querySelector("#mobile-search").hidden = true; closeMenu(); }
+function updateSearch(form, push = false) {
+  const query = String(new FormData(form).get("q") ?? "").trim();
+  const hash = `#/search?q=${encodeURIComponent(query)}`;
+  if (push) history.pushState(null, "", hash);
+  else history.replaceState(null, "", hash);
+  renderRoute();
+}
+function submitSearch(form) {
+  if (!liveSearchStarted && parseRoute().name !== "search") updateSearch(form, true);
+  liveSearchStarted = false;
+  document.querySelector("#mobile-search").hidden = true;
+  closeMenu();
+}
 function applyTheme() {
   const settings = JSON.parse(localStorage.getItem(appearanceKey) || "{}"); const systemDark = matchMedia("(prefers-color-scheme: dark)").matches;
   const theme = settings.mode === "system" || !settings.mode ? (systemDark ? "dark" : "light") : settings.mode;
   document.documentElement.dataset.theme = theme;
   document.documentElement.dataset.palette = theme === "dark" ? (settings.darkPalette ?? "charcoal") : (settings.lightPalette ?? "white");
+  for (const logo of document.querySelectorAll(".brand img")) {
+    logo.src = theme === "dark" ? "./icons/tree-mark-dark.svg" : "./icons/tree-mark.svg";
+  }
 }
 document.querySelector("#menu-toggle").addEventListener("click", () => menu.classList.contains("is-open") ? closeMenu() : openMenu());
 document.querySelector("#menu-backdrop").addEventListener("click", closeMenu);
 outlet.addEventListener("click", closeMenu);
-for (const form of document.querySelectorAll("#desktop-search,#mobile-search")) form.addEventListener("submit", (event) => { event.preventDefault(); submitSearch(form); });
+for (const form of document.querySelectorAll("#desktop-search,#mobile-search")) {
+  form.addEventListener("submit", (event) => { event.preventDefault(); submitSearch(form); });
+  form.elements.q.addEventListener("input", () => {
+    const firstSearchInput = !liveSearchStarted && parseRoute().name !== "search";
+    liveSearchStarted = true;
+    updateSearch(form, firstSearchInput);
+  });
+}
 document.querySelector("#search-toggle").addEventListener("click", () => { const form = document.querySelector("#mobile-search"); form.hidden = !form.hidden; if (!form.hidden) form.elements.q.focus(); });
-window.addEventListener("hashchange", () => { closeMenu(); renderRoute(); });
+document.addEventListener("click", (event) => {
+  const searchForm = document.querySelector("#mobile-search");
+  if (!searchForm.hidden && !searchForm.contains(event.target) && !document.querySelector("#search-toggle").contains(event.target)) searchForm.hidden = true;
+});
+window.addEventListener("hashchange", () => { liveSearchStarted = false; closeMenu(); renderRoute(); });
 window.addEventListener("storage", applyTheme);
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", applyTheme);
 applyTheme(); renderRoute();

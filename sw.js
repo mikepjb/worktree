@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "worktree-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}v3`;
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -13,6 +13,8 @@ const APP_SHELL = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
+  "./icons/tree-mark.svg",
+  "./icons/tree-mark-dark.svg",
   "./vendor/htmx.min.js",
   "./vendor/markdown-it.min.js",
   "./vendor/alpine.min.js",

@@ -48,18 +48,28 @@ test("task badges, filtering, ordering, search, and appearance settings work", a
   await page.reload();
   await expect(page.locator('[data-count="tasks"]')).toHaveText("4");
   await expect(page.locator('[data-count="inbox"]')).toHaveText("1");
+  await expect(page.locator(".task-list")).toHaveCSS("padding-left", "0px");
   const tasks = page.locator(".task-description");
   await expect(tasks).toHaveText(["B next task", "A due next", "Z project task", "Recurring thing"]);
   await page.getByRole("button", { name: "Completed" }).click();
   await expect(tasks).toHaveText(["Done item"]);
   await page.locator("#desktop-search input").fill("searchable phrase");
-  await page.locator("#desktop-search input").press("Enter");
   await expect(page.getByRole("link", { name: "guides/search.md" })).toBeVisible();
   await page.goto("/#/refresh");
   await page.locator('select[name="mode"]').selectOption("dark");
   await page.locator('select[name="darkPalette"]').selectOption("sepia");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("data-palette", "sepia");
+  await expect(page.locator(".desktop-brand img")).toHaveAttribute("src", /tree-mark-dark\.svg$/);
+  await expect(page.locator('select[name="lightPalette"] option')).toHaveCount(5);
+  await expect(page.locator('select[name="darkPalette"] option')).toHaveCount(6);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#/tasks");
+  await page.locator("#search-toggle").click();
+  await expect(page.locator("#mobile-search")).toBeVisible();
+  await page.locator("#menu-toggle").click();
+  await expect(page.locator("#mobile-search")).toBeHidden();
+  await expect(page.locator("#menu")).toHaveClass(/is-open/);
 });
 
 test("settings are saved and retrieved from IndexedDB", async ({ page }) => {
@@ -129,6 +139,8 @@ test("inbox items persist across reload and can be removed and cleared", async (
   await page.reload();
   await expect(page.getByText("First item")).toBeVisible();
   await expect(page.getByText("Second item")).toBeVisible();
+  await expect(page.locator(".item-list")).toHaveCSS("padding-left", "0px");
+  await expect(page.locator(".item-list .task-row").first()).toHaveCSS("padding-left", "0px");
 
   await page.evaluate(async (id) => {
     await window.worktreeStorage.removeInboxItem(id);
@@ -173,12 +185,12 @@ test("the versioned app shell contains every offline dependency", async ({
 
   const cacheState = await page.evaluate(async () => {
     const names = await caches.keys();
-    const cache = await caches.open("worktree-shell-v3");
+    const cache = await caches.open("worktree-shell-v5");
     const paths = (await cache.keys()).map((request) => new URL(request.url).pathname);
     return { names, paths };
   });
 
-  expect(cacheState.names).toContain("worktree-shell-v3");
+  expect(cacheState.names).toContain("worktree-shell-v5");
   expect(cacheState.paths).toEqual(
     expect.arrayContaining([
       "/",
@@ -193,6 +205,8 @@ test("the versioned app shell contains every offline dependency", async ({
       "/icons/icon-192.png",
       "/icons/icon-512.png",
       "/icons/icon-maskable-512.png",
+      "/icons/tree-mark.svg",
+      "/icons/tree-mark-dark.svg",
       "/vendor/htmx.min.js",
       "/vendor/markdown-it.min.js",
       "/vendor/alpine.min.js",
