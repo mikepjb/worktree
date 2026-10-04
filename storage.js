@@ -124,6 +124,12 @@
     });
   }
 
+  function clearSettings() {
+    return useStore(SETTINGS_STORE, "readwrite", async (store) => {
+      await requestResult(store.delete(GITHUB_SETTINGS_KEY));
+    });
+  }
+
   function saveSettings(settings) {
     if (!settings || typeof settings !== "object") {
       return Promise.reject(new TypeError("Settings must be an object"));
@@ -231,6 +237,7 @@
     openDatabase,
     getSettings,
     saveSettings,
+    clearSettings,
     getSnapshot,
     getLatestSnapshot,
     replaceSnapshot,

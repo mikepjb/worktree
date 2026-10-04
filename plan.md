@@ -24,11 +24,13 @@
 
 ## Interface
 
-- [ ] Render tasks ordered by `+next`, due date, and urgency.
-- [ ] Render a folder/file sidebar and Markdown note view.
-- [ ] Add the local inbox: create, copy all, remove, and clear.
-- [ ] Add loading, empty, authentication, sync, and offline error states.
-- [ ] Add controls to clear credentials and all local data.
+- [x] Add responsive navigation with a persistent desktop menu and mobile drawer.
+- [x] Add Phosphor icons, global task/inbox counts, and a collapsible note tree.
+- [x] Add search across task descriptions, note paths, and note content.
+- [x] Add persisted System/Light/Dark appearance and independent palettes.
+- [x] Render active, completed, and all task filters; order by `+next`, due date, project, and description.
+- [x] Add the local inbox: create, copy all, remove, and clear.
+- [x] Add focused browser tests for search, sorting, menu behavior, and appearance options.
 
 ## Ship and verify
 

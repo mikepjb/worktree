@@ -7,6 +7,7 @@
     <title>Worktree</title>
     <meta name="description" content="Task and notes viewer">
     <meta property="og:title" content="Worktree - Task and notes viewer">
+    <link rel="stylesheet" href="./vendor/phosphor/regular.css">
     <link rel="stylesheet" href="./styles.css">
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./icons/icon-192.png">
@@ -19,18 +20,25 @@
     <script src="./vendor/alpine.min.js" defer></script>
   </head>
   <body>
-    <header class="app-header">
-      <a class="brand" href="#/tasks" aria-label="Worktree tasks">
-        <img src="./icons/icon-192.png" alt="" width="40" height="40">
-        <span>Worktree</span>
-      </a>
-      <nav aria-label="Main navigation">
-        <a href="#/tasks" data-route="tasks">Tasks</a>
-        <a href="#/files" data-route="files">Files</a>
-        <a href="#/inbox" data-route="inbox">Inbox</a>
-        <a href="#/refresh" data-route="refresh">Refresh</a>
-      </nav>
+    <header class="mobile-header">
+      <button class="icon-button" id="menu-toggle" aria-label="Open menu" aria-expanded="false"><i class="ph ph-list" aria-hidden="true"></i></button>
+      <a class="brand" href="#/tasks"><img src="./icons/icon-192.png" alt="" width="32" height="32"><span>Worktree</span></a>
+      <button class="icon-button" id="search-toggle" aria-label="Search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></button>
+      <form id="mobile-search" class="mobile-search" hidden><input name="q" type="search" placeholder="Search tasks and notes" aria-label="Search tasks and notes"></form>
     </header>
+    <aside class="menu" id="menu" aria-label="Main menu">
+      <a class="brand desktop-brand" href="#/tasks"><img src="./icons/icon-192.png" alt="" width="32" height="32"><span>Worktree</span></a>
+      <nav class="menu-nav" aria-label="Main navigation">
+        <a href="#/inbox" data-route="inbox"><i class="ph ph-tray" aria-hidden="true"></i><span>Inbox</span><b data-count="inbox">0</b></a>
+        <a href="#/tasks" data-route="tasks"><i class="ph ph-check-square" aria-hidden="true"></i><span>Tasks</span><b data-count="tasks">0</b></a>
+        <div id="note-tree" class="note-tree" aria-label="Notes"></div>
+      </nav>
+      <div class="menu-footer">
+        <form id="desktop-search" class="desktop-search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input name="q" type="search" placeholder="Search" aria-label="Search tasks and notes"><kbd>↵</kbd></form>
+        <a href="#/refresh" data-route="refresh"><i class="ph ph-gear" aria-hidden="true"></i><span>Sync / Settings</span></a>
+      </div>
+    </aside>
+    <button class="menu-backdrop" id="menu-backdrop" aria-label="Close menu" hidden></button>
     <main id="app" class="app-content" aria-live="polite"></main>
     <noscript>Worktree requires JavaScript.</noscript>
   </body>

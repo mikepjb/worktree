@@ -1,9 +1,11 @@
 const CACHE_PREFIX = "worktree-shell-";
-const CACHE_NAME = `${CACHE_PREFIX}v2`;
+const CACHE_NAME = `${CACHE_PREFIX}v3`;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./vendor/phosphor/regular.css",
+  "./vendor/phosphor/Phosphor.woff2",
   "./app.js",
   "./storage.js",
   "./github-sync.js",

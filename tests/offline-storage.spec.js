@@ -19,15 +19,47 @@ test("internal routes render their offline-backed views", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Tasks" })).toBeVisible();
   await expect(page.getByText("No cached tasks yet")).toBeVisible();
 
-  await page.getByRole("link", { name: "Files" }).click();
-  await expect(page).toHaveURL(/#\/files$/);
-  await expect(page.getByRole("heading", { name: "Files" })).toBeVisible();
+  await page.goto("/#/files");
+  await expect(page.locator("#app")).toHaveAttribute("aria-busy", "false");
+  await expect(page.getByRole("heading", { name: "Notes" })).toBeVisible();
 
   await page.getByRole("link", { name: "Inbox" }).click();
   await expect(page.getByText("Your local inbox is empty")).toBeVisible();
 
-  await page.getByRole("link", { name: "Refresh" }).click();
-  await expect(page.getByRole("heading", { name: "GitHub sync" })).toBeVisible();
+  await page.getByRole("link", { name: "Sync / Settings" }).click();
+  await expect(page.getByRole("heading", { name: "Sync / Settings" })).toBeVisible();
+});
+
+test("task badges, filtering, ordering, search, and appearance settings work", async ({ page }) => {
+  await openApp(page);
+  await page.evaluate(async () => {
+    await window.worktreeStorage.replaceSnapshot("example/notes@main", {
+      tasks: [
+        { description: "Z project task", status: "pending", project: "work", due: "20261201T000000Z" },
+        { description: "B next task", status: "pending", tags: ["next"] },
+        { description: "A due next", status: "pending", due: "20261101T000000Z" },
+        { description: "Recurring thing", status: "recurring" },
+        { description: "Done item", status: "completed" },
+      ],
+      files: [{ path: "guides/search.md", content: "Look up searchable phrase here." }],
+    });
+    await window.worktreeStorage.addInboxItem("Inbox counter");
+  });
+  await page.reload();
+  await expect(page.locator('[data-count="tasks"]')).toHaveText("4");
+  await expect(page.locator('[data-count="inbox"]')).toHaveText("1");
+  const tasks = page.locator(".task-description");
+  await expect(tasks).toHaveText(["B next task", "A due next", "Z project task", "Recurring thing"]);
+  await page.getByRole("button", { name: "Completed" }).click();
+  await expect(tasks).toHaveText(["Done item"]);
+  await page.locator("#desktop-search input").fill("searchable phrase");
+  await page.locator("#desktop-search input").press("Enter");
+  await expect(page.getByRole("link", { name: "guides/search.md" })).toBeVisible();
+  await page.goto("/#/refresh");
+  await page.locator('select[name="mode"]').selectOption("dark");
+  await page.locator('select[name="darkPalette"]').selectOption("sepia");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-palette", "sepia");
 });
 
 test("settings are saved and retrieved from IndexedDB", async ({ page }) => {
@@ -126,7 +158,8 @@ test("notes render Markdown without enabling raw HTML", async ({ page }) => {
   );
 
   await page.goto("/#/files");
-  await page.getByRole("link", { name: "projects/example.md" }).click();
+  await page.getByRole("button", { name: /projects/ }).click();
+  await page.getByRole("link", { name: "example.md" }).click();
   await expect(page.getByRole("heading", { name: "Safe heading" })).toBeVisible();
   await expect(page.locator("#unsafe")).toHaveCount(0);
   await expect(page.locator("article")).toContainText("<script");
@@ -140,17 +173,19 @@ test("the versioned app shell contains every offline dependency", async ({
 
   const cacheState = await page.evaluate(async () => {
     const names = await caches.keys();
-    const cache = await caches.open("worktree-shell-v2");
+    const cache = await caches.open("worktree-shell-v3");
     const paths = (await cache.keys()).map((request) => new URL(request.url).pathname);
     return { names, paths };
   });
 
-  expect(cacheState.names).toContain("worktree-shell-v2");
+  expect(cacheState.names).toContain("worktree-shell-v3");
   expect(cacheState.paths).toEqual(
     expect.arrayContaining([
       "/",
       "/index.html",
       "/styles.css",
+      "/vendor/phosphor/regular.css",
+      "/vendor/phosphor/Phosphor.woff2",
       "/app.js",
       "/storage.js",
       "/github-sync.js",
