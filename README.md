@@ -1,5 +1,9 @@
 # Worktree
 
+<p align="center">
+  <img src="./icons/tree-rooted-wide.svg" alt="Worktree tree icon" width="192">
+</p>
+
 _This project aims to make taskwarrior tasks and plain markdown notes available
 in git via mobile._
 

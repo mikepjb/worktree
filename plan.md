@@ -2,10 +2,10 @@
 
 ## Foundation
 
-- [ ] Create `index.html`, `styles.css`, `app.js`, `sw.js`, and `manifest.webmanifest`.
-- [ ] Add app icons and use relative URLs so GitHub Pages subpaths work.
-- [ ] Vendor HTMX and a safe Markdown renderer; disable raw HTML.
-- [ ] Register the service worker and handle its first-load activation.
+- [x] Create `index.html`, `styles.css`, `app.js`, `sw.js`, and `manifest.webmanifest`.
+- [x] Add app icons and use relative URLs so GitHub Pages subpaths work.
+- [x] Vendor HTMX and a safe Markdown renderer; disable raw HTML.
+- [x] Register the service worker and handle its first-load activation.
 
 ## Offline storage
 
