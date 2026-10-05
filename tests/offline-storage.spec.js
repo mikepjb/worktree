@@ -199,12 +199,14 @@ test("the versioned app shell contains every offline dependency", async ({
 
   const cacheState = await page.evaluate(async () => {
     const names = await caches.keys();
-    const cache = await caches.open("worktree-shell-v6");
+    const cache = await caches.open("worktree-shell-v7");
     const paths = (await cache.keys()).map((request) => new URL(request.url).pathname);
-    return { names, paths };
+    const lightLogo = await (await cache.match("/icons/tree-mark.svg")).text();
+    return { names, paths, lightLogo };
   });
 
-  expect(cacheState.names).toContain("worktree-shell-v6");
+  expect(cacheState.names).toContain("worktree-shell-v7");
+  expect(cacheState.lightLogo).toContain('viewBox="104 100 308 315"');
   expect(cacheState.paths).toEqual(
     expect.arrayContaining([
       "/",
